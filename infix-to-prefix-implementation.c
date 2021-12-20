@@ -1,59 +1,8 @@
-#include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "Stack.h"
 
-struct Stack {
-    int Top;
-    unsigned Capacity;
-    int* Array;
-};
-
-struct Stack* createStack(unsigned Capacity)
-{
-    struct Stack* Stack = (struct Stack*)malloc(sizeof(struct Stack));
-    Stack->Capacity = Capacity;
-    Stack->Top = -1;
-    Stack->Array = (int*)malloc(Stack->Capacity * sizeof(int));
-    return Stack;
-}
-
-int isFull(struct Stack* Stack)
-{
-    return Stack->Top == Stack->Capacity - 1;
-}
-
-int isEmpty(struct Stack* Stack)
-{
-    return Stack->Top == -1;
-}
-
-void Push(struct Stack* Stack, int item)
-{
-    if (isFull(Stack))
-        return;
-    Stack->Array[++Stack->Top] = item;
-    printf("Pushed %c\n", item);
-}
-
-int Pop(struct Stack* Stack)
-{
-    if (isEmpty(Stack))
-        return INT_MIN;
-    int Popped = Stack->Array[Stack->Top--];
-    printf("Popped %c\n", Popped);
-    return Popped;
-}
-
-int Peek(struct Stack* Stack)
-{
-    if (isEmpty(Stack))
-        return INT_MIN;
-    int Peek = Stack->Array[Stack->Top];
-    printf("Peek %c\n", Peek);
-    return Peek;
-}
 
 int getPrecedenceOfOperator(char Operator){
     switch (Operator) {
@@ -75,23 +24,23 @@ int getPrecedenceOfOperator(char Operator){
 
 int main()
 {
-    struct Stack* Stack = createStack(100);
+    struct Stack* Stack = createStack(60);
     int PR, peekPR, iterator ;
-    char prefix[60];
-    char character;
+    char prefix[60], character;
 
     for(iterator = 0 ; (character = getchar()) != EOF ; iterator++) {
         printf("----- tier %d-----\n", iterator);
+
         character = tolower(character);
 
-        if(character == '\n') {
+        if(character == '\n') { // encountering the last character of the expression, which is a LF control character
             printf("\n - clearing the stack : \n\n");
             while(!isEmpty(Stack)){
-                prefix[iterator] = Pop(Stack);
+                char tempPoppedValue = Pop(Stack);
+                strncat(prefix, &tempPoppedValue, 1);
                 printf("echoed %c \n", prefix[iterator]);
             }
-            printf("%s", prefix);
-            printf("----- tier -----\n");
+            printf("\n - Prefix Expression : \n\n\t%s\n\n", prefix);
             return 0;
         }
 
@@ -101,8 +50,8 @@ int main()
         }
 
         if(character >= 'a' && character <= 'z' || character >= '0' && character <= '9') {
-             prefix[iterator] = character;
-             printf("echoed %c \n", prefix[iterator]);
+             strncat(prefix, &character, 1);
+             printf("choed %c \n", prefix[iterator]);
              continue;
         }
         else {
@@ -112,19 +61,14 @@ int main()
             }
 
             if(character == '('){
-                putchar(')');
-                putchar(')');
-                putchar('\n');
                 while(Peek(Stack) != ')'){
-                    prefix[iterator] = Pop(Stack);
+                    char tempPoppedValue = Pop(Stack);
+                    strncat(prefix, &tempPoppedValue, 1);
                     printf("echoed %c \n", prefix[iterator]);
                 }
                 Pop(Stack);
                 continue;
             } else if(character == ')') {
-                putchar('(');
-                putchar('(');
-                putchar('\n');
                 Push(Stack, character);
                 continue;
             }
@@ -137,7 +81,8 @@ int main()
                     continue;
                 } else if(PR == peekPR) {
                     while(getPrecedenceOfOperator(Peek(Stack)) == PR) {
-                        prefix[iterator] = Pop(Stack);
+                        char tempPoppedValue = Pop(Stack);
+                        strncat(prefix, &tempPoppedValue, 1);
                         printf("echoed %c \n", prefix[iterator]);
                     }
                     Push(Stack, character);
@@ -148,18 +93,17 @@ int main()
                 } else if (PR < peekPR) {
                     while(PR < peekPR && !isEmpty(Stack))
                     {
-                        prefix[iterator] = Pop(Stack);
+                        char tempPoppedValue = Pop(Stack);
+                        strncat(prefix, &tempPoppedValue, 1);
                         printf("echoed %c \n", prefix[iterator]);
                     }
                     Push(Stack, character);
                     continue;
                 }
             } else {
-                printf("%d : %c\n", PR, character);
                 return 1;
             }
         }
-        printf("----- tier -----\n");
     }
     return 0;
 }
