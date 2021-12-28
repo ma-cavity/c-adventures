@@ -34,14 +34,18 @@ int main()
         character = tolower(character);
 
         if(character == '\n') { // encountering the last character of the expression, which is a LF control character
-            printf("\n - clearing the stack : \n\n");
+            printf("- the incoming character is : EndOfExpression (LineFeed ASCII) \n");
+            printf("- End Of The Expression");
+            printf("\n- clearing the stack : \n\n");
             while(!isEmpty(Stack)){
                 char tempPoppedValue = Pop(Stack);
                 strncat(prefix, &tempPoppedValue, 1);
-                printf("echoed %c \n", prefix[iterator]);
+                printf("echoed %c \n", tempPoppedValue);
             }
             printf("\n - Prefix Expression : \n\n\t%s\n\n", prefix);
             return 0;
+        }else {
+            printf("- the incoming character is : %c \n", character);
         }
 
         if(character == ' ') {
@@ -51,7 +55,8 @@ int main()
 
         if(character >= 'a' && character <= 'z' || character >= '0' && character <= '9') {
              strncat(prefix, &character, 1);
-             printf("choed %c \n", prefix[iterator]);
+             printf("- echoed directly because it's an operand [a-zA-Z0-9] \n");
+             printf("echoed %c \n", character);
              continue;
         }
         else {
@@ -59,16 +64,16 @@ int main()
                 Push(Stack, character);
                 continue;
             }
-
-            if(character == '('){
-                while(Peek(Stack) != ')'){
+            if(character == ')'){
+                printf("- encountered ) , popping till reach ( (where TOP=( ) \n");
+                while(Peek(Stack) != '('){
                     char tempPoppedValue = Pop(Stack);
                     strncat(prefix, &tempPoppedValue, 1);
-                    printf("echoed %c \n", prefix[iterator]);
+                    printf("echoed %c \n", tempPoppedValue);
                 }
                 Pop(Stack);
                 continue;
-            } else if(character == ')') {
+            } else if(character == '(') {
                 Push(Stack, character);
                 continue;
             }
@@ -83,7 +88,7 @@ int main()
                     while(getPrecedenceOfOperator(Peek(Stack)) == PR) {
                         char tempPoppedValue = Pop(Stack);
                         strncat(prefix, &tempPoppedValue, 1);
-                        printf("echoed %c \n", prefix[iterator]);
+                        printf("echoed %c \n", tempPoppedValue);
                     }
                     Push(Stack, character);
                     continue;
@@ -95,7 +100,7 @@ int main()
                     {
                         char tempPoppedValue = Pop(Stack);
                         strncat(prefix, &tempPoppedValue, 1);
-                        printf("echoed %c \n", prefix[iterator]);
+                        printf("echoed %c \n", tempPoppedValue);
                     }
                     Push(Stack, character);
                     continue;

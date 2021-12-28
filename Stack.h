@@ -50,7 +50,7 @@ int Peek(struct Stack* Stack)
     if (isEmpty(Stack))
         return INT_MIN;
     int Peek = Stack->Array[Stack->Top];
-    printf("Peek %c\n", Peek);
+    printf("the TOP is : %c\n", Peek);
     return Peek;
 }
 
