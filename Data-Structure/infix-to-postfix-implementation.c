@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include "Stack.h"
 
 int getPrecedenceOfOperator(char Operator){
@@ -22,23 +23,32 @@ int getPrecedenceOfOperator(char Operator){
 
 int main()
 {
-    struct Stack* Stack = createStack(100);
-    char character;
-    int PR, peekPR, iterator ;
-    char postfix[60];
+    struct Stack* Stack = createStack(60);
+    char character, postfix[60] = "";
+    int characterPrecedence, precedenceOfPeek, iterator ;
 
+    // iterating the infix Expression
     for(iterator = 0 ; (character = getchar()) != EOF ; iterator++) {
         printf("----- tier %d -----\n", iterator);
+
         character = tolower(character);
-        if(character == '\n') { // omitting the LF control character
-            printf("\n - clearing the stack : \n\n");
+
+        if(character == '\n') { // encountering the last character of the expression, which is a LF control character. at this point program starts popping till Stack is empty, then outputs the Prefix Expression.
+            printf("- the incoming character is : EndOfExpression (LineFeed ASCII) \n");
+            printf("- End Of The Expression\n");
+            printf("- clearing the stack : \n\n");
+
             while(!isEmpty(Stack)){
-                postfix[iterator] = Pop(Stack);
-                    printf("echoed %c \n", postfix[iterator]);
+                char tempPoppedValue = Pop(Stack, false);
+                strncat(postfix, &tempPoppedValue, 1);
+                printf("printed %c \n", tempPoppedValue);
             }
-            printf("%s", postfix);
-            printf("----- tier -----\n");
+
+            printf("\n- Postfix Expression : \n\n\t%s\n\n", postfix);
+
             return 0;
+        }else {
+            printf("- the incoming character is : %c \n", character);
         }
 
         if(character == ' ') {
@@ -47,44 +57,46 @@ int main()
         }
 
         if(character >= 'a' && character <= 'z' || character >= '0' && character <= '9') { // Rule NO 1
-             postfix[iterator] = character;
-             printf("echoed %c \n", postfix[iterator]);
+            strncat(postfix, &character, 1);
+            printf("printed %c \n", postfix[iterator]);
+            printf("- printed directly because it's an operand [a-zA-Z0-9] \n");
+            continue;
         }
         else { // Rule NO 2
             if(isEmpty(Stack) || character == '(') { // Rule NO 2. push if stack is empty
-                Push(Stack, character);
+                Push(Stack, character, false);
+                printf(character == '(' ? "- Pushed because the character is '(' " : "- Pushed because the Stack is empty \n");
                 continue;
-            }
-
-            if(character == ')') { // Rule NO 7
-                while(Peek(Stack) != '('){
-                    postfix[iterator] = Pop(Stack);
-                    printf("echoed %c \n", postfix[iterator]);
+            }else if(character == ')') { // Rule NO 7
+                printf("- encountered ')' , popping till reach '(' (where TOP='(' ) \n");
+                while(Peek(Stack, false) != '('){
+                    char tempPoppedValue = Pop(Stack, false);
+                    strncat(postfix, &tempPoppedValue, 1);
+                    printf("printed %c \n", postfix[iterator]);
                 }
-                Pop(Stack); // Popping the ( character
+                Pop(Stack, false); // Popping the ( character
                 continue;
-            }
-
-            if ((PR = getPrecedenceOfOperator(character)) != -1) {
-                int cachedPeek = Peek(Stack);
-                if(PR > (peekPR = getPrecedenceOfOperator(cachedPeek))) { // Rule NO 2 push if character has higher precedence than TOP
-                    Push(Stack, character);
+            }else if ((characterPrecedence = getPrecedenceOfOperator(character)) != -1) {
+                int cachedPeek = Peek(Stack, false);
+                if(characterPrecedence > (precedenceOfPeek = getPrecedenceOfOperator(cachedPeek))) { // Rule NO 2 push if character has higher precedence than TOP
+                    Push(Stack, character, false);
                     continue;
                 } else { // Rule NO 4
-                    while(getPrecedenceOfOperator(character) <= getPrecedenceOfOperator(Peek(Stack)))
+                    printf("- Popping till precedence of TOP is higher than or equal to precedence of '%c'\n", character);
+
+                    while(getPrecedenceOfOperator(character) <= getPrecedenceOfOperator(Peek(Stack, false)))
                     {
-                        postfix[iterator] = Pop(Stack);
-                        printf("echoed %c \n", postfix[iterator]);
+                        char tempPoppedValue = Pop(Stack, false);
+                        strncat(postfix, &tempPoppedValue, 1);
+                        printf("printed %c \n", postfix[iterator]);
                     }
-                    Push(Stack, character);
+                    Push(Stack, character, false);
                     continue;
                 }
             } else {
-                printf("%d : %c\n", PR, character);
                 return 1;
             }
         }
-        printf("----- tier -----\n");
     }
     return 0;
 }
