@@ -1,5 +1,9 @@
 #ifndef C_ADVENTURES_STACK_H
 #define C_ADVENTURES_STACK_H
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <limits.h>
 
 struct Stack {
     int Top;
