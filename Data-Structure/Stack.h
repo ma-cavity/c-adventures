@@ -1,7 +1,5 @@
 #ifndef C_ADVENTURES_STACK_H
 #define C_ADVENTURES_STACK_H
-#include <stdlib.h>
-#include <limits.h>
 
 struct Stack {
     int Top;
@@ -28,29 +26,35 @@ int isEmpty(struct Stack* Stack)
     return Stack->Top == -1;
 }
 
-void Push(struct Stack* Stack, int item)
+void Push(struct Stack* Stack, int item, bool silent)
 {
     if (isFull(Stack))
         return;
     Stack->Array[++Stack->Top] = item;
-    printf("Pushed %c\n", item);
+    if (!silent)
+        printf("Pushed %c\n", item);
+
 }
 
-int Pop(struct Stack* Stack)
+int Pop(struct Stack* Stack, bool silent)
 {
     if (isEmpty(Stack))
         return INT_MIN;
     int Popped = Stack->Array[Stack->Top--];
-    printf("Popped %c\n", Popped);
+
+    if (!silent)
+        printf("Popped %c\n", Popped);
     return Popped;
 }
 
-int Peek(struct Stack* Stack)
+int Peek(struct Stack* Stack, bool silent)
 {
     if (isEmpty(Stack))
         return INT_MIN;
     int Peek = Stack->Array[Stack->Top];
-    printf("the TOP is : %c\n", Peek);
+
+    if (!silent)
+        printf("the TOP is : %c\n", Peek);
     return Peek;
 }
 
