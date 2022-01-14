@@ -4,7 +4,7 @@
 
 int main() {
     char s1[LIMIT] = "", s2[LIMIT] = "";
-    int occurranceOffset = 0, occurranceCounter = 0;
+    int occurrenceOffset = 0, occurrenceCounter = 0;
 
     fgets(s1, LIMIT, stdin);
     fgets(s2, LIMIT, stdin);
@@ -14,17 +14,17 @@ int main() {
             for(int internalIterator = 0 ; internalIterator < strlen(s2) - 1 ; internalIterator++) {
                 if(s1[iterator + internalIterator] == s2[internalIterator]) {
                     if(internalIterator == 0) {
-                        occurranceOffset = iterator;
+                        occurrenceOffset = iterator;
                     }
-                    occurranceCounter++;
+                    occurrenceCounter++;
 
-                if(occurranceCounter + 1 == strlen(s2)) {
-                    printf("%d", occurranceOffset);
+                if(occurrenceCounter + 1 == strlen(s2)) {
+                    printf("%d", occurrenceOffset);
                     return 0;
                 }
 
                 } else {
-                    occurranceCounter = 0;
+                    occurrenceCounter = 0;
                     break;
                 }
             }
