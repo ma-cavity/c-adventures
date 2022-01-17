@@ -7,9 +7,23 @@
 #define ARR_ALLOCATION_MIN 1
 #define STR_LIMIT 120
 
-int binarySearch(short unsigned int* values, unsigned short int len) {
-    selectionSort(values, len);
-    return 1;
+int binarySearch(short unsigned int* values, unsigned short int searchValue, unsigned short int midOffset, unsigned short int actualLen) {
+    unsigned short int middle = values[midOffset];
+
+    if(midOffset < 0 || midOffset > actualLen) {
+        return -1;
+    }
+
+    if(values[midOffset] == searchValue)
+        return midOffset;
+    else if ((searchValue > values[midOffset - 1] && searchValue < values[midOffset + 1]) || searchValue == 0)
+        return -1;
+    else if(middle == searchValue)
+        return midOffset / 2;
+    else if(searchValue > middle)
+        return binarySearch(values, searchValue, midOffset + 1, actualLen);
+    else
+        return binarySearch(values, searchValue, midOffset - 1, actualLen);
 }
 
 int lengthCheck(int al) {
@@ -63,10 +77,11 @@ void extract(char* s, unsigned short int* array, unsigned short int len) {
 }
 
 int main() {
-    unsigned short int* values, len = 0;
+    unsigned short int* values, len = 0, search;
     char s[STR_LIMIT] = "";
 
     fgets(s, STR_LIMIT, stdin);
+    scanf("%hd", &search);
 
     for (int i = 0; i < STR_LIMIT && s[i] != '\0' && s[i] != '\n' ;i++)
         s[i] == ',' && len++;
@@ -77,8 +92,10 @@ int main() {
     values = (unsigned short int*)calloc(len, sizeof(int));
     extract(s, values, len);
 
-    binarySearch(values, len + 1);
-    printArray(values, len + 1);
+    selectionSort(values, len + 1);
+
+    int res = binarySearch(values, search, len / 2, len);
+    printf("%d\n", res);
 
     free(values);
 }
